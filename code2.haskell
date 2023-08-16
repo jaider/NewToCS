@@ -1,0 +1,65 @@
+import System.Random
+import Control.Monad
+
+data FruitItem = FruitItem { name :: String, quantity :: Int }
+
+data FruitPrice = FruitPrice { fruitName :: String, price :: Double }
+
+getRandomPrice :: IO Double
+getRandomPrice = do
+    rand <- newStdGen
+    let randomInt = fst $ randomR (1, 10) rand
+        randomDouble = fst $ random rand
+    return $ fromIntegral randomInt + randomDouble
+
+main :: IO ()
+main = do
+    let cartSize = 0
+    cartRef <- newIORef []
+
+    let fruitPrices =
+            [ FruitPrice "Apple" =<< getRandomPrice
+            , FruitPrice "Banana" =<< getRandomPrice
+            , FruitPrice "Orange" =<< getRandomPrice
+              -- You can add more fruits and prices here
+            ]
+
+    let start = forever $ do
+        putStrLn "Open Catalog"
+        putStrLn "Available Fruits:"
+        forM_ (zip [1..] fruitPrices) $ \(i, fp) ->
+            putStrLn $ show i ++ ". " ++ fruitName fp
+        putStrLn $ show (length fruitPrices + 1) ++ ". Other"
+
+        putStr "Select the Product: "
+        choice <- readLn
+
+        if choice >= 1 && choice <= length fruitPrices
+            then do
+                let selectedFruit = fruitName (fruitPrices !! (choice - 1))
+                putStrLn "Edit Quantity: "
+                quantity <- readLn
+                let newItem = FruitItem { name = selectedFruit, quantity = max 1 quantity }
+                cart <- readIORef cartRef
+                writeIORef cartRef (cart ++ [newItem])
+                putStrLn "Add to Shopping Cart"
+
+                putStrLn "Ready to Checkout? (y/n): "
+                readyToCheckout <- getLine
+                when (readyToCheckout == "y" || readyToCheckout == "Y") $ do
+                    putStrLn "Shopping Cart Contents:"
+                    cart' <- readIORef cartRef
+                    let total = sum [ price fp * fromIntegral (quantity item) | item <- cart', fp <- fruitPrices ]
+                    forM_ cart' $ \item -> do
+                        let fp = head [ fp' | fp' <- fruitPrices, fruitName fp' == name item ]
+                        let itemTotal = price fp * fromIntegral (quantity item)
+                        putStrLn $ show (quantity item) ++ " " ++ name item ++ " - Price: " ++ show (price fp) ++ " - Total: " ++ show itemTotal
+                    putStrLn $ "Total: " ++ show total
+                    putStrLn "Press Checkout"
+                    putStrLn "Add Payment Info"
+                    putStrLn "Add Shipping Info"
+                    putStrLn "Get Tracking Print"
+        else
+            start
+
+    start
