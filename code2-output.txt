@@ -1,0 +1,28 @@
+Open Catalog
+Available Fruits:
+1. Apple
+2. Banana
+3. Orange
+4. Other
+Select the Product: 2
+Edit Quantity: 3
+Add to Shopping Cart
+Ready to Checkout? (y/n): n
+Open Catalog
+Available Fruits:
+1. Apple
+2. Banana
+3. Orange
+4. Other
+Select the Product: 3
+Edit Quantity: 2
+Add to Shopping Cart
+Ready to Checkout? (y/n): y
+Shopping Cart Contents:
+3 Banana - Price: 4.12 - Total: 12.36
+2 Orange - Price: 2.67 - Total: 5.34
+Total: 17.70
+Press Checkout
+Add Payment Info
+Add Shipping Info
+Get Tracking Print
